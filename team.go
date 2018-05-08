@@ -9,7 +9,7 @@ type Team struct {
 
 // CreateParams implements the Cruddable interface
 func (u *Team) CreateParams() []interface{} {
-	return []interface{}{u.Name}
+	return []interface{}{u.UserID, u.Name}
 }
 
 // CreateQuery implements the Cruddable interface
@@ -25,6 +25,11 @@ func (u *Team) ReadParams() []interface{} {
 // ReadQuery implements the Cruddable interface
 func (u *Team) ReadQuery() string {
 	return "SELECT id, name, archived FROM teams WHERE id=$1 AND archived = false"
+}
+
+// UpdateManyParams implements the Cruddable interface
+func (u *Team) UpdateManyParams() []interface{} {
+	return []interface{}{u.Name}
 }
 
 // UpdateParams implements the Cruddable interface

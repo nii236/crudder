@@ -7,6 +7,7 @@ import (
 	"github.com/lib/pq"
 )
 
+// DB is the conn
 type DB struct {
 	conn *sqlx.DB
 }
@@ -18,7 +19,7 @@ func (db *DB) List(collection Collection) error {
 
 // UpdateMany implements the Collectioner interface
 func (db *DB) UpdateMany(collection Collection, item Item, IDs ...interface{}) error {
-	params := item.UpdateParams()
+	params := item.UpdateManyParams()
 	args := []interface{}{pq.Array(IDs)}
 	for _, v := range params {
 		args = append(args, v)
@@ -37,22 +38,14 @@ func (db *DB) GetMany(collection Collection, IDs ...interface{}) error {
 }
 
 // GetManyReference implements the Collectioner interface
-func (db *DB) GetManyReference(collection Collection, table string, PKColumn string, PK interface{}) error {
-	fmt.Println(collection.ReferenceQuery(table, PKColumn))
-	return db.conn.Select(collection, collection.ReferenceQuery(table, PKColumn), PK)
+func (db *DB) GetManyReference(collection Collection, table string, FKColumn string, PK interface{}) error {
+	fmt.Println(collection.ReferenceQuery(table, FKColumn))
+	return db.conn.Select(collection, collection.ReferenceQuery(table, FKColumn), PK)
 }
 
 // Create implements the Crudder interface
-func (db *DB) Create(item Item, fkID interface{}) error {
-	params := item.CreateParams()
-	args := []interface{}{}
-	if fkID != nil {
-		args = append(args, fkID)
-	}
-	for _, v := range params {
-		args = append(args, v)
-	}
-	return db.conn.Get(item, item.CreateQuery(), args...)
+func (db *DB) Create(item Item) error {
+	return db.conn.Get(item, item.CreateQuery(), item.CreateParams()...)
 }
 
 // Read implements the Crudder interface
@@ -61,16 +54,11 @@ func (db *DB) Read(item Item) error {
 }
 
 // Update implements the Crudder interface
-func (db *DB) Update(item Item, ID interface{}) error {
-	params := item.UpdateParams()
-	args := []interface{}{ID}
-	for _, v := range params {
-		args = append(args, v)
-	}
-	return db.conn.Get(item, item.UpdateQuery(), args...)
+func (db *DB) Update(item Item) error {
+	return db.conn.Get(item, item.UpdateQuery(), item.UpdateParams()...)
 }
 
 // Delete implements the Crudder interface
 func (db *DB) Delete(item Item) error {
-	return db.conn.Get(item, item.DeleteQuery(), item.DeleteParams()...)
+	return db.conn.Get(item, item.DeleteQuery(), item.DeleteParams())
 }

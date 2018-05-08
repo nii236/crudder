@@ -26,9 +26,14 @@ func (u *User) ReadQuery() string {
 	return "SELECT id, name, archived FROM users WHERE id=$1 AND archived = false"
 }
 
+// UpdateManyParams implements the Cruddable interface
+func (u *User) UpdateManyParams() []interface{} {
+	return []interface{}{u.Name}
+}
+
 // UpdateParams implements the Cruddable interface
 func (u *User) UpdateParams() []interface{} {
-	return []interface{}{u.Name}
+	return []interface{}{u.ID, u.Name}
 }
 
 // UpdateQuery implements the Cruddable interface

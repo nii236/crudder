@@ -9,6 +9,7 @@ type Item interface {
 	ReadParams() []interface{}
 	ReadQuery() string
 
+	UpdateManyParams() []interface{}
 	UpdateParams() []interface{}
 	UpdateQuery() string
 

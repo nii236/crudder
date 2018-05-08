@@ -31,7 +31,7 @@ func main() {
 			Name: f.Name(),
 		}
 
-		err = svc.Create(user, nil)
+		err = svc.Create(user)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -54,7 +54,7 @@ func main() {
 				UserID: v.ID,
 			}
 
-			err = svc.Create(team, v.ID)
+			err = svc.Create(team)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -69,7 +69,7 @@ func main() {
 	for _, team := range teamsByUser {
 		fmt.Printf("%+v\n", team)
 	}
-
+	test(svc)
 }
 
 func test(svc *DB) {
@@ -84,7 +84,7 @@ func test(svc *DB) {
 
 	fmt.Println("Update first user...")
 	firstUser.Name = "John Nguyen"
-	err = svc.Update(firstUser, 1)
+	err = svc.Update(firstUser)
 	if err != nil {
 		fmt.Println(err)
 		return
