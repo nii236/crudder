@@ -30,8 +30,8 @@ func main() {
 		user := &User{
 			Name: f.Name(),
 		}
-
-		err = svc.Create(user)
+		target := &User{}
+		err = svc.Create(target, user)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -53,8 +53,8 @@ func main() {
 				Name:   f.CompanyName(),
 				UserID: v.ID,
 			}
-
-			err = svc.Create(team)
+			target := &Team{}
+			err = svc.Create(target, team)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -84,7 +84,8 @@ func test(svc *DB) {
 
 	fmt.Println("Update first user...")
 	firstUser.Name = "John Nguyen"
-	err = svc.Update(firstUser, "1")
+	target := &User{}
+	err = svc.Update(target, firstUser, "1")
 	if err != nil {
 		fmt.Println(err)
 		return

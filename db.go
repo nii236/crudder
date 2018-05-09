@@ -21,8 +21,8 @@ func (db *DB) List(collection Collection) error {
 }
 
 // UpdateMany implements the Collectioner interface
-func (db *DB) UpdateMany(collection Collection, item Item, IDs []string) error {
-	params := item.UpdateManyParams()
+func (db *DB) UpdateMany(collection Collection, source Item, IDs []string) error {
+	params := source.UpdateManyParams()
 	params = append(params, pq.Array(IDs))
 	return db.conn.Select(collection, collection.UpdateManyQuery(), params...)
 }
@@ -43,10 +43,10 @@ func (db *DB) Reference(collection Collection, table string, column string, ID s
 }
 
 // Create implements the Crudder interface
-func (db *DB) Create(item Item) error {
-	params := item.CreateParams()
+func (db *DB) Create(target Item, source Item) error {
+	params := source.CreateParams()
 	log.Println(params)
-	return db.conn.Get(item, item.CreateQuery(), params...)
+	return db.conn.Get(target, source.CreateQuery(), params...)
 }
 
 // Read implements the Crudder interface
@@ -57,10 +57,10 @@ func (db *DB) Read(item Item, ID string) error {
 }
 
 // Update implements the Crudder interface
-func (db *DB) Update(item Item, ID string) error {
-	params := item.UpdateParams()
+func (db *DB) Update(target Item, source Item, ID string) error {
+	params := target.UpdateParams()
 	params = append(params, ID)
-	return db.conn.Get(item, item.UpdateQuery(), params...)
+	return db.conn.Get(source, target.UpdateQuery(), params...)
 }
 
 // Delete implements the Crudder interface
