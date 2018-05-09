@@ -1,11 +1,14 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 )
+
+var _ Collectioner = &DB{}
+var _ Crudder = &DB{}
 
 // DB is the conn
 type DB struct {
@@ -18,47 +21,51 @@ func (db *DB) List(collection Collection) error {
 }
 
 // UpdateMany implements the Collectioner interface
-func (db *DB) UpdateMany(collection Collection, item Item, IDs ...interface{}) error {
+func (db *DB) UpdateMany(collection Collection, item Item, IDs []string) error {
 	params := item.UpdateManyParams()
-	args := []interface{}{pq.Array(IDs)}
-	for _, v := range params {
-		args = append(args, v)
-	}
-	return db.conn.Select(collection, collection.UpdateManyQuery(), args...)
+	params = append(params, pq.Array(IDs))
+	return db.conn.Select(collection, collection.UpdateManyQuery(), params...)
 }
 
 // DeleteMany implements the Collectioner interface
-func (db *DB) DeleteMany(collection Collection, IDs ...interface{}) error {
+func (db *DB) DeleteMany(collection Collection, IDs []string) error {
 	return db.conn.Select(collection, collection.DeleteManyQuery(), pq.Array(IDs))
 }
 
 // GetMany implements the Collectioner interface
-func (db *DB) GetMany(collection Collection, IDs ...interface{}) error {
+func (db *DB) GetMany(collection Collection, IDs []string) error {
 	return db.conn.Select(collection, collection.GetManyQuery(), pq.Array(IDs))
 }
 
-// GetManyReference implements the Collectioner interface
-func (db *DB) GetManyReference(collection Collection, table string, FKColumn string, PK interface{}) error {
-	fmt.Println(collection.ReferenceQuery(table, FKColumn))
-	return db.conn.Select(collection, collection.ReferenceQuery(table, FKColumn), PK)
+// Reference implements the Collectioner interface
+func (db *DB) Reference(collection Collection, table string, column string, ID string) error {
+	return db.conn.Select(collection, collection.ReferenceQuery(table, column), ID)
 }
 
 // Create implements the Crudder interface
 func (db *DB) Create(item Item) error {
-	return db.conn.Get(item, item.CreateQuery(), item.CreateParams()...)
+	params := item.CreateParams()
+	log.Println(params)
+	return db.conn.Get(item, item.CreateQuery(), params...)
 }
 
 // Read implements the Crudder interface
-func (db *DB) Read(item Item) error {
-	return db.conn.Get(item, item.ReadQuery(), item.ReadParams()...)
+func (db *DB) Read(item Item, ID string) error {
+	params := item.ReadParams()
+	params = append(params, ID)
+	return db.conn.Get(item, item.ReadQuery(), params...)
 }
 
 // Update implements the Crudder interface
-func (db *DB) Update(item Item) error {
-	return db.conn.Get(item, item.UpdateQuery(), item.UpdateParams()...)
+func (db *DB) Update(item Item, ID string) error {
+	params := item.UpdateParams()
+	params = append(params, ID)
+	return db.conn.Get(item, item.UpdateQuery(), params...)
 }
 
 // Delete implements the Crudder interface
-func (db *DB) Delete(item Item) error {
-	return db.conn.Get(item, item.DeleteQuery(), item.DeleteParams())
+func (db *DB) Delete(item Item, ID string) error {
+	params := item.DeleteParams()
+	params = append(params, ID)
+	return db.conn.Get(item, item.DeleteQuery(), params...)
 }

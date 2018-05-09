@@ -18,7 +18,7 @@ func (u *User) CreateQuery() string {
 
 // ReadParams implements the Cruddable interface
 func (u *User) ReadParams() []interface{} {
-	return []interface{}{u.ID}
+	return []interface{}{}
 }
 
 // ReadQuery implements the Cruddable interface
@@ -33,17 +33,17 @@ func (u *User) UpdateManyParams() []interface{} {
 
 // UpdateParams implements the Cruddable interface
 func (u *User) UpdateParams() []interface{} {
-	return []interface{}{u.ID, u.Name}
+	return []interface{}{u.Name}
 }
 
 // UpdateQuery implements the Cruddable interface
 func (u *User) UpdateQuery() string {
-	return "UPDATE users SET name = $2 WHERE id=$1 AND archived = false RETURNING id, name, archived"
+	return "UPDATE users SET name = $1 WHERE id=$2 AND archived = false RETURNING id, name, archived"
 }
 
 // DeleteParams implements the Cruddable interface
 func (u *User) DeleteParams() []interface{} {
-	return []interface{}{u.ID}
+	return []interface{}{}
 }
 
 // DeleteQuery implements the Cruddable interface

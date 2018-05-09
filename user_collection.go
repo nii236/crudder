@@ -51,9 +51,9 @@ AND id = ANY($1)
 func (u *UserList) UpdateManyQuery() string {
 	return `
 UPDATE users 
-SET name = $2 
+SET name = $1
 WHERE archived = false 
-AND id = ANY($1)
+AND id = ANY($2)
 RETURNING id, name, archived
 `
 }

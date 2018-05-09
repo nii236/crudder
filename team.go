@@ -19,7 +19,7 @@ func (u *Team) CreateQuery() string {
 
 // ReadParams implements the Cruddable interface
 func (u *Team) ReadParams() []interface{} {
-	return []interface{}{u.ID}
+	return []interface{}{}
 }
 
 // ReadQuery implements the Cruddable interface
@@ -39,12 +39,12 @@ func (u *Team) UpdateParams() []interface{} {
 
 // UpdateQuery implements the Cruddable interface
 func (u *Team) UpdateQuery() string {
-	return "UPDATE teams SET name = $2 WHERE id=$1 AND archived = false RETURNING id, name, archived"
+	return "UPDATE teams SET name = $1 WHERE id=$2 AND archived = false RETURNING id, name, archived"
 }
 
 // DeleteParams implements the Cruddable interface
 func (u *Team) DeleteParams() []interface{} {
-	return []interface{}{u.ID}
+	return []interface{}{}
 }
 
 // DeleteQuery implements the Cruddable interface

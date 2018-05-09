@@ -65,7 +65,7 @@ func main() {
 
 	fmt.Println("Get teams for user")
 	teamsByUser := TeamList{}
-	svc.GetManyReference(&teamsByUser, "users", "user_id", 2)
+	svc.Reference(&teamsByUser, "users", "user_id", "2")
 	for _, team := range teamsByUser {
 		fmt.Printf("%+v\n", team)
 	}
@@ -74,8 +74,8 @@ func main() {
 
 func test(svc *DB) {
 	fmt.Println("Get first user...")
-	firstUser := &User{ID: 1}
-	err := svc.Read(firstUser)
+	firstUser := &User{}
+	err := svc.Read(firstUser, "1")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -84,25 +84,25 @@ func test(svc *DB) {
 
 	fmt.Println("Update first user...")
 	firstUser.Name = "John Nguyen"
-	err = svc.Update(firstUser)
+	err = svc.Update(firstUser, "1")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Printf("%+v\n", firstUser)
 
-	// fmt.Println("Delete first user...")
+	fmt.Println("Delete first user...")
 
-	// err = svc.Delete(firstUser)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// fmt.Printf("%+v\n", firstUser)
+	err = svc.Delete(firstUser, "1")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%+v\n", firstUser)
 
 	fmt.Println("GetMany...")
 	getManyUsers := UserList{}
-	err = svc.GetMany(&getManyUsers, 1, 2, 3)
+	err = svc.GetMany(&getManyUsers, []string{"1", "2", "3"})
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -116,7 +116,7 @@ func test(svc *DB) {
 	updateManyUsers := UserList{}
 	updateTo := &User{Name: "Johnny"}
 
-	err = svc.UpdateMany(&updateManyUsers, updateTo, 1, 2, 5)
+	err = svc.UpdateMany(&updateManyUsers, updateTo, []string{"1", "2", "5"})
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -154,27 +154,27 @@ func test(svc *DB) {
 
 func migrate(conn *sqlx.DB) {
 	_, err := conn.Exec(`
-DROP TABLE IF EXISTS teams;
-DROP TABLE IF EXISTS users;
-	`)
+	DROP TABLE IF EXISTS teams;
+	DROP TABLE IF EXISTS users;
+		`)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	_, err = conn.Exec(`
-CREATE TABLE IF NOT EXISTS users (
-	id SERIAL PRIMARY KEY NOT NULL,
-	name text NOT NULL,
-	archived boolean NOT NULL DEFAULT false
-);
+	CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY NOT NULL,
+		name text NOT NULL,
+		archived boolean NOT NULL DEFAULT false
+	);
 
-CREATE TABLE IF NOT EXISTS teams (
-	id SERIAL PRIMARY KEY NOT NULL,
-	name text NOT NULL,
-	user_id INTEGER NOT NULL REFERENCES users(id),
-	archived boolean NOT NULL DEFAULT false
-);
-`)
+	CREATE TABLE IF NOT EXISTS teams (
+		id SERIAL PRIMARY KEY NOT NULL,
+		name text NOT NULL,
+		user_id INTEGER NOT NULL REFERENCES users(id),
+		archived boolean NOT NULL DEFAULT false
+	);
+	`)
 	if err != nil {
 		fmt.Println(err)
 		return

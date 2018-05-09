@@ -20,7 +20,7 @@ type Item interface {
 // DB needs to implement these
 type Crudder interface {
 	Create(item Item) error
-	Read(item Item) error
-	Update(item Item) error
-	Delete(item Item) error
+	Read(item Item, id string) error
+	Update(item Item, id string) error
+	Delete(item Item, id string) error
 }
